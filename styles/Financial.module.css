@@ -1,0 +1,807 @@
+/* Modern, Clean Financial Dashboard */
+
+.financialContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0;
+}
+
+.header {
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  color: #2d3748;
+  margin: 0;
+  font-weight: 700;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #718096;
+  margin-top: 0.5rem;
+}
+
+/* Modern Tabs */
+.tabsContainer {
+  display: flex;
+  gap: 0;
+  background: white;
+  padding: 0 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 1rem 2rem;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #718096;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.tab:hover {
+  color: #4299e1;
+  background: #f7fafc;
+}
+
+.activeTab {
+  color: #3182ce;
+  border-bottom-color: #3182ce;
+  background: #ebf8ff;
+}
+
+.content {
+  max-width: 1400px;
+  margin: 2rem auto;
+  padding: 0 2rem 4rem;
+}
+
+/* Daily Input Form */
+.dailyInputForm {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+}
+
+.formTitle {
+  font-size: 1.75rem;
+  color: #2d3748;
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+
+.formSection {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #f7fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  color: #2d3748;
+  margin: 0;
+  font-weight: 600;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.input, .select, .textarea {
+  width: 100%;
+  padding: 0.75rem;
+  background: white;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  color: #2d3748;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.input:focus, .select:focus, .textarea:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.expenseRow {
+  display: grid;
+  grid-template-columns: 1fr 200px 50px;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  align-items: center;
+}
+
+.revenueGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.addButton {
+  padding: 0.625rem 1.5rem;
+  background: #3182ce;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.addButton:hover {
+  background: #2c5282;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.removeButton {
+  padding: 0.5rem;
+  background: #fc8181;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+}
+
+.removeButton:hover {
+  background: #f56565;
+}
+
+/* Summary Box */
+.summaryBox {
+  margin: 2rem 0;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+}
+
+.summaryTitle {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.summaryItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.summaryLabel {
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.summaryValue {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.positive {
+  color: #48bb78 !important;
+}
+
+.negative {
+  color: #fc8181 !important;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.submitButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Messages */
+.successMessage, .errorMessage {
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.successMessage {
+  background: #c6f6d5;
+  color: #22543d;
+  border-left: 4px solid #48bb78;
+}
+
+.errorMessage {
+  background: #fed7d7;
+  color: #742a2a;
+  border-left: 4px solid #fc8181;
+}
+
+/* Calendar View */
+.calendarView {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+}
+
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #f7fafc;
+  border-radius: 8px;
+}
+
+.currentMonth {
+  font-size: 1.5rem;
+  color: #2d3748;
+  margin: 0;
+  font-weight: 600;
+}
+
+.navButton {
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  color: #2d3748;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.navButton:hover {
+  background: #3182ce;
+  color: white;
+  border-color: #3182ce;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+}
+
+.dayHeader {
+  padding: 1rem;
+  text-align: center;
+  font-weight: 600;
+  color: #4a5568;
+  background: #f7fafc;
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+.calendarDay {
+  min-height: 100px;
+  padding: 0.75rem;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.calendarDay:hover {
+  border-color: #3182ce;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.emptyDay {
+  background: #fafafa;
+  border-color: transparent;
+  cursor: default;
+}
+
+.emptyDay:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.hasReport {
+  border-color: #48bb78;
+  background: #f0fff4;
+}
+
+.dayNumber {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.dayIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.reportDot {
+  width: 8px;
+  height: 8px;
+  background: #48bb78;
+  border-radius: 50%;
+}
+
+.miniSummary {
+  font-size: 0.875rem;
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.loadingSpinner {
+  text-align: center;
+  padding: 3rem;
+  color: #718096;
+  font-size: 1.125rem;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modalContent {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.closeButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #f7fafc;
+  border: none;
+  border-radius: 6px;
+  width: 35px;
+  height: 35px;
+  color: #2d3748;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.closeButton:hover {
+  background: #fc8181;
+  color: white;
+}
+
+.modalTitle {
+  color: #2d3748;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.reportDetails {
+  color: #2d3748;
+}
+
+.detailSection {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f7fafc;
+  border-radius: 8px;
+  border-left: 4px solid #3182ce;
+}
+
+.detailSection h4 {
+  color: #2d3748;
+  margin-bottom: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.noReport {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #718096;
+}
+
+/* Reports Dashboard */
+.reportsDashboard {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+}
+
+.reportControls {
+  margin-bottom: 2rem;
+}
+
+.reportTypeButtons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.reportTypeButton {
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.reportTypeButton:hover {
+  border-color: #3182ce;
+  color: #3182ce;
+}
+
+.reportTypeButton.active {
+  background: #3182ce;
+  border-color: #3182ce;
+  color: white;
+}
+
+.dateRangeSelector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: #f7fafc;
+  border-radius: 8px;
+}
+
+.loadingContainer {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.reportContainer {
+  margin-top: 2rem;
+}
+
+/* Summary Cards */
+.summaryCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  border-color: #3182ce;
+}
+
+.profitCard {
+  border-color: #48bb78;
+  background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+}
+
+.lossCard {
+  border-color: #fc8181;
+  background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+}
+
+.cardIcon {
+  font-size: 2.5rem;
+}
+
+.cardContent {
+  flex: 1;
+}
+
+.cardLabel {
+  font-size: 0.875rem;
+  color: #718096;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.cardValue {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #2d3748;
+}
+
+/* Period Info */
+.periodInfo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #f7fafc;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.periodItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.periodLabel {
+  color: #718096;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.periodValue {
+  color: #2d3748;
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+/* Export Section */
+.exportSection {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.exportButton {
+  padding: 1rem 2rem;
+  background: #48bb78;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.exportButton:hover {
+  background: #38a169;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(72, 187, 120, 0.3);
+}
+
+/* Table */
+.tableContainer {
+  overflow-x: auto;
+  margin-top: 2rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.tableTitle {
+  color: #2d3748;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.reportTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.reportTable th,
+.reportTable td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.reportTable th {
+  background: #f7fafc;
+  color: #2d3748;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.reportTable td {
+  color: #4a5568;
+}
+
+.reportTable tbody tr:hover {
+  background: #f7fafc;
+}
+
+.totalRow {
+  background: #edf2f7 !important;
+  font-weight: 600;
+}
+
+.totalRow td {
+  color: #2d3748 !important;
+  font-size: 1.125rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header {
+    padding: 1.5rem 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .tabsContainer {
+    padding: 0 1rem;
+    overflow-x: auto;
+  }
+
+  .tab {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .content {
+    padding: 0 1rem 2rem;
+  }
+
+  .dailyInputForm,
+  .calendarView,
+  .reportsDashboard {
+    padding: 1rem;
+  }
+
+  .expenseRow {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .revenueGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar {
+    gap: 0.25rem;
+  }
+
+  .calendarDay {
+    min-height: 80px;
+    padding: 0.5rem;
+  }
+
+  .dayNumber {
+    font-size: 1rem;
+  }
+
+  .reportTypeButtons {
+    flex-direction: column;
+  }
+
+  .reportTypeButton {
+    width: 100%;
+  }
+
+  .dateRangeSelector {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryCards {
+    grid-template-columns: 1fr;
+  }
+
+  .periodInfo {
+    grid-template-columns: 1fr;
+  }
+
+  .reportTable {
+    font-size: 0.875rem;
+  }
+
+  .reportTable th,
+  .reportTable td {
+    padding: 0.75rem 0.5rem;
+  }
+}
