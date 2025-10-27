@@ -215,7 +215,11 @@ export default function ReportsDashboard() {
               <div className={styles.cardIcon}>💸</div>
               <div className={styles.cardContent}>
                 <div className={styles.cardLabel}>Cash Expenses</div>
-                <div className={styles.cardValue}>{formatCurrency(reportData.total_cash_expenses || 0)}</div>
+                <div className={styles.cardValue}>{formatCurrency(
+                  reportData.total_cash_expenses !== undefined 
+                    ? reportData.total_cash_expenses 
+                    : reportData.total_all_expenses || reportData.total_expenses || 0
+                )}</div>
               </div>
             </div>
 
@@ -307,23 +311,26 @@ export default function ReportsDashboard() {
                 </thead>
                 <tbody>
                   {reportData.reports.map((report, idx) => {
-                    const cashExpenses = report.summary.total_cash_expenses || 0;
+                    // Support both old and new schema
+                    const cashExpenses = report.summary.total_cash_expenses !== undefined 
+                      ? report.summary.total_cash_expenses 
+                      : report.summary.total_expenses || 0; // Old schema: show total_expenses as cash
                     const onlineExpenses = report.summary.total_online_expenses || 0;
                     const totalExpenses = report.summary.total_all_expenses || report.summary.total_expenses || 0;
                     return (
                       <tr key={idx}>
                         <td>{report.date}</td>
-                        <td>{formatCurrency(report.revenues.general)}</td>
-                        <td>{formatCurrency(report.revenues.pos)}</td>
-                        <td>{formatCurrency(report.revenues.cash)}</td>
+                        <td>{formatCurrency(report.revenues.general || 0)}</td>
+                        <td>{formatCurrency(report.revenues.pos || 0)}</td>
+                        <td>{formatCurrency(report.revenues.cash || 0)}</td>
                         <td>{formatCurrency(cashExpenses)}</td>
                         <td>{formatCurrency(onlineExpenses)}</td>
                         <td>{formatCurrency(totalExpenses)}</td>
-                        <td className={report.summary.cash_turnover >= 0 ? styles.positive : styles.negative}>
-                          {formatCurrency(report.summary.cash_turnover)}
+                        <td className={(report.summary.cash_turnover || 0) >= 0 ? styles.positive : styles.negative}>
+                          {formatCurrency(report.summary.cash_turnover || 0)}
                         </td>
-                        <td className={report.summary.general_turnover >= 0 ? styles.positive : styles.negative}>
-                          {formatCurrency(report.summary.general_turnover)}
+                        <td className={(report.summary.general_turnover || 0) >= 0 ? styles.positive : styles.negative}>
+                          {formatCurrency(report.summary.general_turnover || 0)}
                         </td>
                       </tr>
                     );

@@ -131,7 +131,7 @@ export default function CalendarView() {
                   <div className={styles.dayIndicator}>
                     <span className={styles.reportDot}>●</span>
                     <span className={styles.miniSummary}>
-                      BGN {dayData.report.summary.general_turnover.toFixed(0)}
+                      BGN {(dayData.report.summary.general_turnover || 0).toFixed(0)}
                     </span>
                   </div>
                 )}
@@ -194,23 +194,48 @@ export default function CalendarView() {
                   </div>
                 )}
 
+                {/* Online Banking Expenses */}
+                {selectedReport.online_banking_expenses && selectedReport.online_banking_expenses.length > 0 && (
+                  <div className={styles.detailSection}>
+                    <h4>🏦 Online Banking Expenses</h4>
+                    {selectedReport.online_banking_expenses.map((item, idx) => (
+                      <div key={idx} className={styles.detailRow}>
+                        <span>{item.type}:</span>
+                        <span>{formatCurrency(item.amount)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {/* Summary */}
                 <div className={styles.detailSection}>
                   <h4>📊 Summary</h4>
+                  {selectedReport.summary.total_cash_expenses !== undefined && (
+                    <div className={styles.detailRow}>
+                      <span>Cash Expenses:</span>
+                      <span>{formatCurrency(selectedReport.summary.total_cash_expenses || 0)}</span>
+                    </div>
+                  )}
+                  {selectedReport.summary.total_online_expenses !== undefined && (
+                    <div className={styles.detailRow}>
+                      <span>Online Banking Expenses:</span>
+                      <span>{formatCurrency(selectedReport.summary.total_online_expenses || 0)}</span>
+                    </div>
+                  )}
                   <div className={styles.detailRow}>
                     <span>Total Expenses:</span>
-                    <span>{formatCurrency(selectedReport.summary.total_expenses)}</span>
+                    <span>{formatCurrency(selectedReport.summary.total_all_expenses || selectedReport.summary.total_expenses || 0)}</span>
                   </div>
                   <div className={styles.detailRow}>
                     <span>Cash Turnover:</span>
-                    <span className={selectedReport.summary.cash_turnover >= 0 ? styles.positive : styles.negative}>
-                      {formatCurrency(selectedReport.summary.cash_turnover)}
+                    <span className={(selectedReport.summary.cash_turnover || 0) >= 0 ? styles.positive : styles.negative}>
+                      {formatCurrency(selectedReport.summary.cash_turnover || 0)}
                     </span>
                   </div>
                   <div className={styles.detailRow}>
                     <span>General Turnover:</span>
-                    <span className={selectedReport.summary.general_turnover >= 0 ? styles.positive : styles.negative}>
-                      {formatCurrency(selectedReport.summary.general_turnover)}
+                    <span className={(selectedReport.summary.general_turnover || 0) >= 0 ? styles.positive : styles.negative}>
+                      {formatCurrency(selectedReport.summary.general_turnover || 0)}
                     </span>
                   </div>
                 </div>
