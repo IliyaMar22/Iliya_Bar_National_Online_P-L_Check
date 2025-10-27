@@ -34,15 +34,21 @@ const dailyReportSchema = new mongoose.Schema({
     type: { type: String },  // 'type' is a reserved word, so we need to specify it explicitly
     amount: Number
   }],
+  online_banking_expenses: [{
+    type: { type: String },  // 'type' is a reserved word, so we need to specify it explicitly
+    amount: Number
+  }],
   revenues: {
     general: Number,
     pos: Number,
     cash: Number
   },
   summary: {
-    total_expenses: Number,
-    cash_turnover: Number,
-    general_turnover: Number
+    total_cash_expenses: Number,      // Staff + Cash Expenses only
+    total_online_expenses: Number,     // Online Banking Expenses only
+    total_all_expenses: Number,        // All expenses combined
+    cash_turnover: Number,             // Cash Revenue - Cash Expenses
+    general_turnover: Number           // General Revenue - All Expenses
   },
   notes: String,
   created_at: {
@@ -57,17 +63,26 @@ const dailyReportSchema = new mongoose.Schema({
 
 const DailyReport = mongoose.models.DailyReport || mongoose.model('DailyReport', dailyReportSchema);
 
-const calculateSummary = (staffExpenses, expenses, revenues) => {
+const calculateSummary = (staffExpenses, expenses, onlineBankingExpenses, revenues) => {
   const totalStaffExpenses = staffExpenses.reduce((sum, item) => sum + item.amount, 0);
-  const totalExpenses = expenses.reduce((sum, item) => sum + item.amount, 0);
-  const totalAllExpenses = totalStaffExpenses + totalExpenses;
+  const totalCashExpenses = expenses.reduce((sum, item) => sum + item.amount, 0);
+  const totalOnlineExpenses = onlineBankingExpenses.reduce((sum, item) => sum + item.amount, 0);
+  
+  // Total cash expenses = staff + regular cash expenses
+  const totalCashExpensesAll = totalStaffExpenses + totalCashExpenses;
+  // Total all expenses = cash expenses + online banking expenses
+  const totalAllExpenses = totalCashExpensesAll + totalOnlineExpenses;
   
   const cashRevenue = revenues.general - revenues.pos;
-  const cashTurnover = cashRevenue - totalAllExpenses;
+  // Cash turnover = Cash Revenue - Cash Expenses (excluding online banking)
+  const cashTurnover = cashRevenue - totalCashExpensesAll;
+  // General turnover = General Revenue - All Expenses (including online banking)
   const generalTurnover = revenues.general - totalAllExpenses;
   
   return {
-    total_expenses: totalAllExpenses,
+    total_cash_expenses: totalCashExpensesAll,
+    total_online_expenses: totalOnlineExpenses,
+    total_all_expenses: totalAllExpenses,
     cash_turnover: cashTurnover,
     general_turnover: generalTurnover
   };
@@ -96,7 +111,7 @@ export default async function handler(req, res) {
     }
   } else if (req.method === 'POST') {
     try {
-      const { date, staff_expenses, expenses, revenues, notes } = req.body;
+      const { date, staff_expenses, expenses, online_banking_expenses, revenues, notes } = req.body;
       
       if (!date || !revenues || revenues.general === undefined || revenues.pos === undefined) {
         return res.status(400).json({ 
@@ -108,6 +123,7 @@ export default async function handler(req, res) {
       // Ensure arrays are properly parsed
       let parsedStaffExpenses = [];
       let parsedExpenses = [];
+      let parsedOnlineBankingExpenses = [];
       
       if (Array.isArray(staff_expenses)) {
         parsedStaffExpenses = staff_expenses;
@@ -131,10 +147,22 @@ export default async function handler(req, res) {
         }
       }
       
+      if (Array.isArray(online_banking_expenses)) {
+        parsedOnlineBankingExpenses = online_banking_expenses;
+      } else if (typeof online_banking_expenses === 'string') {
+        try {
+          parsedOnlineBankingExpenses = JSON.parse(online_banking_expenses);
+        } catch (e) {
+          console.error('Error parsing online_banking_expenses:', e);
+          parsedOnlineBankingExpenses = [];
+        }
+      }
+      
       const cashRevenue = revenues.general - revenues.pos;
       const summary = calculateSummary(
         parsedStaffExpenses, 
         parsedExpenses, 
+        parsedOnlineBankingExpenses,
         { ...revenues, cash: cashRevenue }
       );
       
@@ -144,6 +172,7 @@ export default async function handler(req, res) {
           date,
           staff_expenses: parsedStaffExpenses,
           expenses: parsedExpenses,
+          online_banking_expenses: parsedOnlineBankingExpenses,
           revenues: {
             general: revenues.general,
             pos: revenues.pos,

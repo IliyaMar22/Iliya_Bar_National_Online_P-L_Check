@@ -32,15 +32,21 @@ const dailyReportSchema = new mongoose.Schema({
     type: { type: String },  // 'type' is a reserved word, so we need to specify it explicitly
     amount: Number
   }],
+  online_banking_expenses: [{
+    type: { type: String },  // 'type' is a reserved word, so we need to specify it explicitly
+    amount: Number
+  }],
   revenues: {
     general: Number,
     pos: Number,
     cash: Number
   },
   summary: {
-    total_expenses: Number,
-    cash_turnover: Number,
-    general_turnover: Number
+    total_cash_expenses: Number,      // Staff + Cash Expenses only
+    total_online_expenses: Number,     // Online Banking Expenses only
+    total_all_expenses: Number,        // All expenses combined
+    cash_turnover: Number,             // Cash Revenue - Cash Expenses
+    general_turnover: Number           // General Revenue - All Expenses
   },
   notes: String,
   created_at: {
@@ -79,7 +85,9 @@ export default async function handler(req, res) {
           success: true,
           data: {
             period: `${start_date} - ${end_date}`,
-            total_expenses: 0,
+            total_cash_expenses: 0,
+            total_online_expenses: 0,
+            total_all_expenses: 0,
             total_general_revenue: 0,
             total_cash_revenue: 0,
             total_pos_revenue: 0,
@@ -91,7 +99,10 @@ export default async function handler(req, res) {
       }
       
       const aggregated = reports.reduce((acc, report) => {
-        acc.total_expenses += report.summary.total_expenses || 0;
+        // Support both old and new schema
+        acc.total_cash_expenses += report.summary.total_cash_expenses || 0;
+        acc.total_online_expenses += report.summary.total_online_expenses || 0;
+        acc.total_all_expenses += report.summary.total_all_expenses || report.summary.total_expenses || 0;
         acc.total_general_revenue += report.revenues.general || 0;
         acc.total_cash_revenue += report.revenues.cash || 0;
         acc.total_pos_revenue += report.revenues.pos || 0;
@@ -99,7 +110,9 @@ export default async function handler(req, res) {
         acc.general_turnover += report.summary.general_turnover || 0;
         return acc;
       }, {
-        total_expenses: 0,
+        total_cash_expenses: 0,
+        total_online_expenses: 0,
+        total_all_expenses: 0,
         total_general_revenue: 0,
         total_cash_revenue: 0,
         total_pos_revenue: 0,

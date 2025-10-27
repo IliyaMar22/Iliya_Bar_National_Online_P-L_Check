@@ -35,6 +35,17 @@ export default function handler(req, res) {
           'Insurance',
           'Voided Bills (Storniрана сметка)',
           'Other'
+        ],
+        online_banking_expense_types: [
+          'Bank Fees',
+          'Expenses - Fees Online Services',
+          'Expenses - Suppliers (Stock Expenses)',
+          'Expense Utility Bills',
+          'Hired Service Expenses',
+          'Internet Bills',
+          'Rent Expense',
+          'Tax Authorities',
+          'Other Expenses'
         ]
       }
     });

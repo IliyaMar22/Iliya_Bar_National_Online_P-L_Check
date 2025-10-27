@@ -6,10 +6,11 @@ export default function DailyInputForm() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [staffExpenses, setStaffExpenses] = useState([]);
   const [expenses, setExpenses] = useState([]);
+  const [onlineBankingExpenses, setOnlineBankingExpenses] = useState([]);
   const [generalRevenue, setGeneralRevenue] = useState(0);
   const [posRevenue, setPosRevenue] = useState(0);
   const [notes, setNotes] = useState('');
-  const [categories, setCategories] = useState({ staff_roles: [], expense_types: [] });
+  const [categories, setCategories] = useState({ staff_roles: [], expense_types: [], online_banking_expense_types: [] });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [existingReport, setExistingReport] = useState(null);
@@ -46,6 +47,7 @@ export default function DailyInputForm() {
         setExistingReport(report);
         setStaffExpenses(report.staff_expenses || []);
         setExpenses(report.expenses || []);
+        setOnlineBankingExpenses(report.online_banking_expenses || []);
         setGeneralRevenue(report.revenues.general || 0);
         setPosRevenue(report.revenues.pos || 0);
         setNotes(report.notes || '');
@@ -55,6 +57,7 @@ export default function DailyInputForm() {
         setExistingReport(null);
         setStaffExpenses([]);
         setExpenses([]);
+        setOnlineBankingExpenses([]);
         setGeneralRevenue(0);
         setPosRevenue(0);
         setNotes('');
@@ -105,17 +108,46 @@ export default function DailyInputForm() {
     setExpenses(expenses.filter((_, i) => i !== index));
   };
 
+  const addOnlineBankingExpense = () => {
+    setOnlineBankingExpenses([...onlineBankingExpenses, { type: '', amount: '' }]);
+  };
+
+  const updateOnlineBankingExpense = (index, field, value) => {
+    const updated = [...onlineBankingExpenses];
+    if (field === 'amount') {
+      // Keep the raw value as entered, don't round BGN amounts
+      updated[index][field] = value === '' ? '' : value;
+    } else {
+      updated[index][field] = value;
+    }
+    setOnlineBankingExpenses(updated);
+  };
+
+  const removeOnlineBankingExpense = (index) => {
+    setOnlineBankingExpenses(onlineBankingExpenses.filter((_, i) => i !== index));
+  };
+
   const calculateSummary = () => {
     const totalStaffExpenses = staffExpenses.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
-    const totalExpenses = expenses.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
-    const totalAllExpenses = totalStaffExpenses + totalExpenses;
+    const totalCashExpenses = expenses.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+    const totalOnlineBankingExpenses = onlineBankingExpenses.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+    
+    // Total cash expenses = staff + regular cash expenses
+    const totalCashExpensesAll = totalStaffExpenses + totalCashExpenses;
+    // Total all expenses = cash expenses + online banking expenses
+    const totalAllExpenses = totalCashExpensesAll + totalOnlineBankingExpenses;
+    
     const cashRevenue = (parseFloat(generalRevenue) || 0) - (parseFloat(posRevenue) || 0);
-    const cashTurnover = cashRevenue - totalAllExpenses;
+    // Cash turnover = Cash Revenue - Cash Expenses (excluding online banking)
+    const cashTurnover = cashRevenue - totalCashExpensesAll;
+    // General turnover = General Revenue - All Expenses (including online banking)
     const generalTurnover = (parseFloat(generalRevenue) || 0) - totalAllExpenses;
 
     return {
       cashRevenue,
-      totalExpenses: totalAllExpenses,
+      totalCashExpenses: totalCashExpensesAll,
+      totalOnlineExpenses: totalOnlineBankingExpenses,
+      totalAllExpenses: totalAllExpenses,
       cashTurnover,
       generalTurnover
     };
@@ -136,6 +168,12 @@ export default function DailyInputForm() {
             amount: Number(item.amount) // Convert to number without rounding
           })),
         expenses: expenses
+          .filter(item => item.type && item.amount)
+          .map(item => ({
+            type: item.type,
+            amount: Number(item.amount) // Convert to number without rounding
+          })),
+        online_banking_expenses: onlineBankingExpenses
           .filter(item => item.type && item.amount)
           .map(item => ({
             type: item.type,
@@ -272,6 +310,45 @@ export default function DailyInputForm() {
           ))}
         </div>
 
+        {/* Online Banking Expenses */}
+        <div className={styles.formSection}>
+          <div className={styles.sectionHeader}>
+            <h3 className={styles.sectionTitle}>🏦 Expenses made through Online Banking Yana</h3>
+            <button type="button" onClick={addOnlineBankingExpense} className={styles.addButton}>
+              + Add Online Banking Expense
+            </button>
+          </div>
+          {onlineBankingExpenses.map((item, index) => (
+            <div key={index} className={styles.expenseRow}>
+              <select
+                value={item.type}
+                onChange={(e) => updateOnlineBankingExpense(index, 'type', e.target.value)}
+                className={styles.select}
+              >
+                <option value="">Select Type</option>
+                {categories.online_banking_expense_types.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+              <input
+                type="number"
+                value={item.amount}
+                onChange={(e) => updateOnlineBankingExpense(index, 'amount', e.target.value)}
+                placeholder="Amount (BGN)"
+                className={styles.input}
+                step="0.01"
+              />
+              <button 
+                type="button" 
+                onClick={() => removeOnlineBankingExpense(index)} 
+                className={styles.removeButton}
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+
         {/* Revenues */}
         <div className={styles.formSection}>
           <h3 className={styles.sectionTitle}>💵 Revenues</h3>
@@ -324,8 +401,16 @@ export default function DailyInputForm() {
               <span className={styles.summaryValue}>{formatCurrency(summary.cashRevenue)}</span>
             </div>
             <div className={styles.summaryItem}>
-              <span className={styles.summaryLabel}>Total Expenses:</span>
-              <span className={styles.summaryValue}>{formatCurrency(summary.totalExpenses)}</span>
+              <span className={styles.summaryLabel}>Cash Expenses:</span>
+              <span className={styles.summaryValue}>{formatCurrency(summary.totalCashExpenses)}</span>
+            </div>
+            <div className={styles.summaryItem}>
+              <span className={styles.summaryLabel}>Online Banking Expenses:</span>
+              <span className={styles.summaryValue}>{formatCurrency(summary.totalOnlineExpenses)}</span>
+            </div>
+            <div className={styles.summaryItem}>
+              <span className={styles.summaryLabel}>Total All Expenses:</span>
+              <span className={styles.summaryValue}>{formatCurrency(summary.totalAllExpenses)}</span>
             </div>
             <div className={styles.summaryItem}>
               <span className={styles.summaryLabel}>Cash Turnover:</span>

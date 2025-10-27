@@ -86,16 +86,21 @@ export default function ReportsDashboard() {
     csv += `Total General Revenue,BGN ${reportData.total_general_revenue.toFixed(2)},€${bgnToEur(reportData.total_general_revenue).toFixed(2)}\n`;
     csv += `Total POS Revenue,BGN ${reportData.total_pos_revenue.toFixed(2)},€${bgnToEur(reportData.total_pos_revenue).toFixed(2)}\n`;
     csv += `Total Cash Revenue,BGN ${reportData.total_cash_revenue.toFixed(2)},€${bgnToEur(reportData.total_cash_revenue).toFixed(2)}\n`;
-    csv += `Total Expenses,BGN ${reportData.total_expenses.toFixed(2)},€${bgnToEur(reportData.total_expenses).toFixed(2)}\n`;
+    csv += `Cash Expenses,BGN ${(reportData.total_cash_expenses || 0).toFixed(2)},€${bgnToEur(reportData.total_cash_expenses || 0).toFixed(2)}\n`;
+    csv += `Online Banking Expenses,BGN ${(reportData.total_online_expenses || 0).toFixed(2)},€${bgnToEur(reportData.total_online_expenses || 0).toFixed(2)}\n`;
+    csv += `Total All Expenses,BGN ${(reportData.total_all_expenses || reportData.total_expenses || 0).toFixed(2)},€${bgnToEur(reportData.total_all_expenses || reportData.total_expenses || 0).toFixed(2)}\n`;
     csv += `Cash Turnover,BGN ${reportData.cash_turnover.toFixed(2)},€${bgnToEur(reportData.cash_turnover).toFixed(2)}\n`;
     csv += `General Turnover,BGN ${reportData.general_turnover.toFixed(2)},€${bgnToEur(reportData.general_turnover).toFixed(2)}\n`;
     csv += `Days Count,${reportData.days_count}\n\n`;
 
     if (reportData.reports && reportData.reports.length > 0) {
       csv += 'Daily Breakdown (all amounts in BGN)\n';
-      csv += 'Date,General Revenue,POS Revenue,Cash Revenue,Total Expenses,Cash Turnover,General Turnover\n';
+      csv += 'Date,General Revenue,POS Revenue,Cash Revenue,Cash Expenses,Online Expenses,Total Expenses,Cash Turnover,General Turnover\n';
       reportData.reports.forEach(report => {
-        csv += `${report.date},${report.revenues.general.toFixed(2)},${report.revenues.pos.toFixed(2)},${report.revenues.cash.toFixed(2)},${report.summary.total_expenses.toFixed(2)},${report.summary.cash_turnover.toFixed(2)},${report.summary.general_turnover.toFixed(2)}\n`;
+        const cashExpenses = report.summary.total_cash_expenses || 0;
+        const onlineExpenses = report.summary.total_online_expenses || 0;
+        const totalExpenses = report.summary.total_all_expenses || report.summary.total_expenses || 0;
+        csv += `${report.date},${report.revenues.general.toFixed(2)},${report.revenues.pos.toFixed(2)},${report.revenues.cash.toFixed(2)},${cashExpenses.toFixed(2)},${onlineExpenses.toFixed(2)},${totalExpenses.toFixed(2)},${report.summary.cash_turnover.toFixed(2)},${report.summary.general_turnover.toFixed(2)}\n`;
       });
     }
 
@@ -209,8 +214,24 @@ export default function ReportsDashboard() {
             <div className={styles.card}>
               <div className={styles.cardIcon}>💸</div>
               <div className={styles.cardContent}>
-                <div className={styles.cardLabel}>Total Expenses</div>
-                <div className={styles.cardValue}>{formatCurrency(reportData.total_expenses)}</div>
+                <div className={styles.cardLabel}>Cash Expenses</div>
+                <div className={styles.cardValue}>{formatCurrency(reportData.total_cash_expenses || 0)}</div>
+              </div>
+            </div>
+
+            <div className={styles.card}>
+              <div className={styles.cardIcon}>🏦</div>
+              <div className={styles.cardContent}>
+                <div className={styles.cardLabel}>Online Banking Expenses</div>
+                <div className={styles.cardValue}>{formatCurrency(reportData.total_online_expenses || 0)}</div>
+              </div>
+            </div>
+
+            <div className={styles.card}>
+              <div className={styles.cardIcon}>💰</div>
+              <div className={styles.cardContent}>
+                <div className={styles.cardLabel}>Total All Expenses</div>
+                <div className={styles.cardValue}>{formatCurrency(reportData.total_all_expenses || reportData.total_expenses || 0)}</div>
               </div>
             </div>
 
@@ -277,27 +298,36 @@ export default function ReportsDashboard() {
                     <th>General Revenue</th>
                     <th>POS Revenue</th>
                     <th>Cash Revenue</th>
-                    <th>Expenses</th>
+                    <th>Cash Expenses</th>
+                    <th>Online Expenses</th>
+                    <th>Total Expenses</th>
                     <th>Cash Turnover</th>
                     <th>General Turnover</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {reportData.reports.map((report, idx) => (
-                    <tr key={idx}>
-                      <td>{report.date}</td>
-                      <td>{formatCurrency(report.revenues.general)}</td>
-                      <td>{formatCurrency(report.revenues.pos)}</td>
-                      <td>{formatCurrency(report.revenues.cash)}</td>
-                      <td>{formatCurrency(report.summary.total_expenses)}</td>
-                      <td className={report.summary.cash_turnover >= 0 ? styles.positive : styles.negative}>
-                        {formatCurrency(report.summary.cash_turnover)}
-                      </td>
-                      <td className={report.summary.general_turnover >= 0 ? styles.positive : styles.negative}>
-                        {formatCurrency(report.summary.general_turnover)}
-                      </td>
-                    </tr>
-                  ))}
+                  {reportData.reports.map((report, idx) => {
+                    const cashExpenses = report.summary.total_cash_expenses || 0;
+                    const onlineExpenses = report.summary.total_online_expenses || 0;
+                    const totalExpenses = report.summary.total_all_expenses || report.summary.total_expenses || 0;
+                    return (
+                      <tr key={idx}>
+                        <td>{report.date}</td>
+                        <td>{formatCurrency(report.revenues.general)}</td>
+                        <td>{formatCurrency(report.revenues.pos)}</td>
+                        <td>{formatCurrency(report.revenues.cash)}</td>
+                        <td>{formatCurrency(cashExpenses)}</td>
+                        <td>{formatCurrency(onlineExpenses)}</td>
+                        <td>{formatCurrency(totalExpenses)}</td>
+                        <td className={report.summary.cash_turnover >= 0 ? styles.positive : styles.negative}>
+                          {formatCurrency(report.summary.cash_turnover)}
+                        </td>
+                        <td className={report.summary.general_turnover >= 0 ? styles.positive : styles.negative}>
+                          {formatCurrency(report.summary.general_turnover)}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
                 <tfoot>
                   <tr className={styles.totalRow}>
@@ -305,7 +335,9 @@ export default function ReportsDashboard() {
                     <td><strong>{formatCurrency(reportData.total_general_revenue)}</strong></td>
                     <td><strong>{formatCurrency(reportData.total_pos_revenue)}</strong></td>
                     <td><strong>{formatCurrency(reportData.total_cash_revenue)}</strong></td>
-                    <td><strong>{formatCurrency(reportData.total_expenses)}</strong></td>
+                    <td><strong>{formatCurrency(reportData.total_cash_expenses || 0)}</strong></td>
+                    <td><strong>{formatCurrency(reportData.total_online_expenses || 0)}</strong></td>
+                    <td><strong>{formatCurrency(reportData.total_all_expenses || reportData.total_expenses || 0)}</strong></td>
                     <td className={reportData.cash_turnover >= 0 ? styles.positive : styles.negative}>
                       <strong>{formatCurrency(reportData.cash_turnover)}</strong>
                     </td>
