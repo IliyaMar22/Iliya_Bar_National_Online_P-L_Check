@@ -113,6 +113,9 @@ export default async function handler(req, res) {
     try {
       const { date, staff_expenses, expenses, online_banking_expenses, revenues, notes } = req.body;
       
+      // Debug: Log what we receive
+      console.log('API received:', { date, hasOnlineBanking: !!online_banking_expenses });
+      
       if (!date || !revenues || revenues.general === undefined || revenues.pos === undefined) {
         return res.status(400).json({ 
           success: false, 
@@ -166,6 +169,13 @@ export default async function handler(req, res) {
         { ...revenues, cash: cashRevenue }
       );
       
+      // Debug: Log what we're about to save
+      console.log('Saving to DB:', { 
+        date, 
+        onlineBankingExpenses: parsedOnlineBankingExpenses.length,
+        summaryKeys: Object.keys(summary)
+      });
+      
       const report = await DailyReport.findOneAndUpdate(
         { date },
         {
@@ -186,6 +196,13 @@ export default async function handler(req, res) {
         },
         { new: true, upsert: true }
       );
+      
+      // Debug: Log what was actually saved
+      console.log('Saved to DB:', { 
+        date,
+        hasOnlineBanking: !!report.online_banking_expenses,
+        onlineBankingCount: report.online_banking_expenses?.length || 0
+      });
       
       res.status(200).json({ success: true, data: report });
     } catch (error) {
