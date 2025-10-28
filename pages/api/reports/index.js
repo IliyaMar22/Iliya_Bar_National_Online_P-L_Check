@@ -169,18 +169,20 @@ export default async function handler(req, res) {
       const report = await DailyReport.findOneAndUpdate(
         { date },
         {
-          date,
-          staff_expenses: parsedStaffExpenses,
-          expenses: parsedExpenses,
-          online_banking_expenses: parsedOnlineBankingExpenses,
-          revenues: {
-            general: revenues.general,
-            pos: revenues.pos,
-            cash: cashRevenue
-          },
-          summary,
-          notes,
-          updated_at: new Date()
+          $set: {
+            date,
+            staff_expenses: parsedStaffExpenses,
+            expenses: parsedExpenses,
+            online_banking_expenses: parsedOnlineBankingExpenses,
+            revenues: {
+              general: revenues.general,
+              pos: revenues.pos,
+              cash: cashRevenue
+            },
+            summary,
+            notes,
+            updated_at: new Date()
+          }
         },
         { new: true, upsert: true }
       );
