@@ -61,7 +61,11 @@ const dailyReportSchema = new mongoose.Schema({
   }
 });
 
-const DailyReport = mongoose.models.DailyReport || mongoose.model('DailyReport', dailyReportSchema);
+// Force model to use the latest schema by deleting cached model
+if (mongoose.models.DailyReport) {
+  delete mongoose.models.DailyReport;
+}
+const DailyReport = mongoose.model('DailyReport', dailyReportSchema);
 
 const calculateSummary = (staffExpenses, expenses, onlineBankingExpenses, revenues) => {
   const totalStaffExpenses = staffExpenses.reduce((sum, item) => sum + item.amount, 0);
